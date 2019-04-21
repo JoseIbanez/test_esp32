@@ -7,58 +7,15 @@
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-long lastBeacon = 0;
+Mymqtt mymqtt();
+
 long lastBoot = 0;
-long lastOrder = 0;
+
 
 char msg[50];
 int value = 0;
 char clientId[20];
-String relayStatus;
-int curTime;
 
-
-// Parse cmd
-int parse_cmd(String input) {
-
-  char delimiter[] = ";";
-  char* ptr;
-  char buf[15];
-
-  #ifdef DEBUG
-  Serial.println(input);
-  #endif
-
-  //Asking for status ?
-  if ((input == "STATUS") || (input == "S")) {
-    return 0;
-  }
-  
-  input.toCharArray(buf, sizeof(buf));
-
-  // Get TimeOut
-  ptr = strtok(buf, delimiter);
-  if (ptr != NULL) {
-    curTime = String(ptr).toInt();
-    lastOrder = millis();
-    Serial.println("Uptime: " + String(curTime));
-  }
-
-  // Get Gpio Status
-  ptr = strtok (NULL, delimiter);
-  if (ptr != NULL) {
-    relayStatus = String(ptr);
-    Serial.println("Relay status: " + relayStatus);
-  }
-
-  // Sanity
-  if (curTime <= 0) {
-    curTime = 0;
-    relayStatus = "0000";
-  }
-
-  return(0);
-}
 
 
 
@@ -66,15 +23,7 @@ int parse_cmd(String input) {
 void callback(char* topic, byte* message, unsigned int length) {
   digitalWrite(LED_BUILTIN, LOW);
   Serial.print("Message arrived on topic: ");
-  Serial.print(topic);
-  Serial.print(". Message: ");
-  String messageOrder;
-  
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
-    messageOrder += (char)message[i];
-  }
-  Serial.println();
+  Serial.println(topic);
 
   // Feel free to add more if statements to control more GPIOs with MQTT
 
@@ -98,6 +47,11 @@ void callback(char* topic, byte* message, unsigned int length) {
 ////////
 int reconnect() {
   char topic[50];
+
+  if (client.connected()) {
+    // Already connected
+    return 0;
+  }
 
   Serial.print("Attempting MQTT connection...");
   // Attempt to connect
@@ -143,10 +97,8 @@ void loop() {
     //sleep_now();
   }
 
-  if (!client.connected()) {
-    if(reconnect() < 0) {
-      return;
-    } 
+  if(reconnect() < 0) {
+      return; 
   }
 
   client.loop();
