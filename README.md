@@ -2,7 +2,7 @@
 Testing ESP32 arduino framework with Platformio
 
 # Some libs
-* PubSub
+* PubSubClient
 * Wifi
 
 # Some boards
