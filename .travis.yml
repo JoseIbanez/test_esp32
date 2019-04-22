@@ -24,21 +24,24 @@
 # Template #1: General project. Test it using existing `platformio.ini`.
 #
 
-# language: python
-# python:
-#     - "2.7"
-#
-# sudo: false
-# cache:
-#     directories:
-#         - "~/.platformio"
-#
-# install:
-#     - pip install -U platformio
-#     - platformio update
-#
-# script:
-#     - platformio run
+language: python
+python:
+    - "2.7"
+
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
+
+install:
+    - pip install -U platformio
+    - platformio update
+
+script:
+    - cd p02-mything
+    - cp lib/setup/secrets_demo.h lib/setup/secrets.h 
+    - platformio run -e test_esp32 -e test_d1mini -e test_geekworm
+
 
 
 #
