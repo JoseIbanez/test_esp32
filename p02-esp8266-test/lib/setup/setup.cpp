@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
+//#include <ESP8266WiFi.h>
+#include <WiFi.h>
 
 #include "setup.h"
 #include "secrets.h"
@@ -35,32 +36,3 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-
-
-void set_clientId(char * clientId, int clientSize) {
-
-  strcpy(clientId,MQTT_CLIENT_ID);
-  //Serial.print("Client MAC: ");
-  //Serial.println(mac);
-  int length = mac.length();
-  int pos = strlen(clientId);
-
-  for (int i = 0; i < length ; i++) {
-
-    if ((char)mac[i] == ':') {
-      continue;
-    }
-
-    if (pos > clientSize-2) {
-      break;
-    }
-
-    clientId[pos] = (char)mac[i];
-    pos++;
-  }  
-
-  clientId[pos]=0;
-  Serial.print("ClientId: ");
-  Serial.print(clientId);
-  Serial.println(".");
-}
