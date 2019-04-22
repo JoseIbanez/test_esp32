@@ -1,15 +1,19 @@
 #include <Arduino.h>
-//#include <ESP8266WiFi.h>
+
+#ifdef ESP32
 #include <WiFi.h>
+#else
+#include <ESP8266WiFi.h>
+#endif
 
 #include "setup.h"
 #include "secrets.h"
 #include "config.h"
 
-String mac;
 
 
 void setup_wifi() {
+  String mac;
 
   delay(10);
   // We start by connecting to a WiFi network

@@ -63,11 +63,10 @@ namespace {
 
     TEST_F(Mything, status02) {
         mything.parse_cmd((byte*)"0110;0101",9);
-        mything.parse_cmd((byte*)"STATUS",1);
+        mything.parse_cmd((byte*)"STATUS",6);
         ASSERT_EQ(mything.curTime, 110);
         ASSERT_EQ(mything.relayStatus, "0101");
     }
-
 
 }  // namespace
 
