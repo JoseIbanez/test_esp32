@@ -54,7 +54,7 @@ void Mything::parse_cmd(byte *message, unsigned int length) {
 
 
 
-void Mything::set_clientId(char* prefix, char* mac) {
+void Mything::set_clientId(const char* prefix, const char* mac) {
 
   clientId = String(prefix);
   clientId.concat(mac);

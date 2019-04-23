@@ -17,7 +17,7 @@ public:
     String clientId = "";
 
     void parse_cmd(byte *message, unsigned int length);
-    void set_clientId(char* prefix, char* mac);
+    void set_clientId(const char* prefix, const char* mac);
     int  check_timeout(long int);
 
 };
