@@ -13,30 +13,37 @@
 
 
 void setup_wifi() {
-  String mac;
-
-  delay(10);
+  delay(100);
+  int count = 0;
   // We start by connecting to a WiFi network
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
 
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    count++;
+    if (count>60) {
+      Serial.println("");
+      Serial.println("WiFi setup failed");
+      return;
+    }
   }
-
-  randomSeed(micros());
-
-  mac = WiFi.macAddress();
-  Serial.print("WiFi MAC: ");
-  Serial.println(mac);
 
   Serial.println("");
   Serial.println("WiFi connected");
-  Serial.println("IP address: ");
+
+	String mac = WiFi.macAddress();
+  Serial.print("WiFi MAC: ");
+	Serial.println(mac);
+
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 }
 
