@@ -1,4 +1,4 @@
-# Testing ESP32
+# Testing ESP32 ![Build state](https://travis-ci.org/JoseIbanez/test_esp32.svg?branch=master)
 Testing ESP32 arduino framework with Platformio
 
 ## Some libs
