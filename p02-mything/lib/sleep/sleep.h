@@ -3,7 +3,7 @@
 
 
 
-void sleep_setup();
+void setup_sleep();
 void sleep_now();
 
 #endif

@@ -14,4 +14,16 @@
 #define MQTT_TOPIC_MOIS  "mois"
 #define MQTT_TOPIC_CALLHOME  "callhome"
 
+
+#ifdef ARDUINO_LOLIN_D32
+#define ANALOG_1 34
+#define ANALOG_2 32
+#endif
+
+#ifdef ARDUINO_ESP32_DEV
+#define ANALOG_1 A0
+#define ANALOG_2 A3
+#endif
+
+
 #endif

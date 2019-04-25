@@ -5,12 +5,13 @@
 #include "config.h"
 #include "setup.h"
 #include "secrets.h"
+#include "sleep.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 Mything mything;
 long lastBoot = 0;
-
+long lastMsg = 0;
 
 
 
@@ -50,9 +51,8 @@ void callback(char* rTopic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.println(rTopic);
 
-  mything.parse_cmd(message, length);
+  //mything.parse_cmd(message, length);
   //update_gpio(relayStatus);
-  
 
   // Send answer
   client.publish(mything.answerTopic, "ok");
@@ -60,6 +60,65 @@ void callback(char* rTopic, byte* message, unsigned int length) {
   delay(100);
   digitalWrite(LED_BUILTIN, HIGH);
 }
+
+
+//
+// send_reading
+//
+void send_reading() {
+    
+    char topic[50];
+
+    float moisture = 0;
+    char  moisString[8];
+
+    // get data
+    moisture = analogRead(ANALOG_1);
+    // Convert the value to a char array
+    dtostrf(moisture, 1, 2, moisString);
+    Serial.print("Moisture: ");
+    Serial.println(moisString);
+    // Prepare topic
+    strcpy(topic,"r/");
+    strcat(topic,mything.id);
+    strcat(topic,".A0/");
+    strcat(topic,MQTT_TOPIC_MOIS);
+    // Send msg
+    client.publish(topic, moisString);
+
+    // get data
+    moisture = analogRead(ANALOG_2);
+    // Convert the value to a char array
+    dtostrf(moisture, 1, 2, moisString);
+    Serial.print("Moisture: ");
+    Serial.println(moisString);
+    // Prepare topic
+    strcpy(topic,"r/");
+    strcat(topic,mything.id);
+    strcat(topic,".A1/");
+    strcat(topic,MQTT_TOPIC_MOIS);
+    // Send msg
+    client.publish(topic, moisString);
+
+
+    /*
+    //humidity = bme.readHumidity();
+    float humidity = 50;
+
+    // Convert the value to a char array
+    char humString[8];
+    dtostrf(humidity, 1, 2, humString);
+    Serial.print("Humidity: ");
+    Serial.println(humString);
+    strcpy(topic,"r/");
+    strcat(topic,clientId);
+    strcat(topic,"/");
+    strcat(topic,MQTT_TOPIC_HUMI);
+    client.publish(topic, humString);
+    */
+  }
+
+
 
 //
 // Arduino setup
@@ -70,7 +129,9 @@ void setup() {
 
   Serial.begin(9600);
   lastBoot = millis();
+
   setup_wifi();  
+  setup_sleep();
 
   mything.set_clientId("ESP", WiFi.macAddress().c_str());
   client.setServer(MQTT_SERVER, MQTT_PORT);
@@ -87,9 +148,9 @@ void loop() {
 
   long now = millis();
 
-  if (WiFi.status() != WL_CONNECTED) {
-    //sleep_now();
-    return;
+  if (now - lastBoot > 30000 || WiFi.status() != WL_CONNECTED) {
+    client.disconnect();
+    sleep_now();
   }
 
   // Check mqtt connection
@@ -100,23 +161,14 @@ void loop() {
   client.loop();
   
   // Send beacon message
-  if (mything.beaconTime(now) > 0) {
-    client.publish(mything.beaconTopic, "ok");
-  }
+  //if (mything.beaconTime(now) > 0) {
+  //  client.publish(mything.beaconTopic, "ok");
+  //}
 
-
-  //blink LED_BUILTIN when relays are up
-  if (mything.curTime > 0) {
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(50);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(100);
-  }
-
-
-  // end of time
-  if (mything.endTime(now)>0) {
-    //update_gpio(relayStatus);
+  // Send reading
+  if (now - lastMsg > 5000) {
+    lastMsg = now;
+    send_reading();
   }
 
 
