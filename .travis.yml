@@ -40,7 +40,10 @@ install:
 script:
     - cd p02-mything
     - cp lib/setup/secrets_demo.h lib/setup/secrets.h 
-    - platformio run -e test_esp32 -e test_d1mini -e test_geekworm
+    - test_build.sh
+    - cd ../p03-mqtt-probe
+    - test_build.sh
+    
 
 
 
