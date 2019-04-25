@@ -70,6 +70,7 @@ void send_reading() {
     char topic[50];
 
     float moisture = 0;
+    float value = 0;
     char  moisString[8];
 
     // get data
@@ -99,6 +100,25 @@ void send_reading() {
     strcat(topic,MQTT_TOPIC_MOIS);
     // Send msg
     client.publish(topic, moisString);
+
+
+    #ifdef ANALOG_BAT
+    //
+    // get battery voltage
+    //
+    value = analogRead(ANALOG_BAT);
+    // Convert the value to a char array
+    dtostrf(value, 1, 2, moisString);
+    Serial.print("Battery: ");
+    Serial.println(moisString);
+    // Prepare topic
+    strcpy(topic,"r/");
+    strcat(topic,mything.id);
+    strcat(topic,".A9/");
+    strcat(topic,MQTT_TOPIC_BATT);
+    // Send msg
+    client.publish(topic, moisString);
+    #endif
 
 
     /*

@@ -12,12 +12,14 @@
 #define MQTT_TOPIC_TEMP  "temp"
 #define MQTT_TOPIC_HUMI  "humi"
 #define MQTT_TOPIC_MOIS  "mois"
+#define MQTT_TOPIC_BATT  "batt"
 #define MQTT_TOPIC_CALLHOME  "callhome"
 
 
 #ifdef ARDUINO_LOLIN_D32
 #define ANALOG_1 34
 #define ANALOG_2 32
+#define ANALOG_BAT 35
 #endif
 
 #ifdef ARDUINO_ESP32_DEV
