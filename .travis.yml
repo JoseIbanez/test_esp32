@@ -38,12 +38,12 @@ install:
     - platformio update
 
 script:
-    - cd p02-mything
+    - cd p02-mything/
     - cp lib/setup/secrets_demo.h lib/setup/secrets.h 
-    - test_build.sh
-    - cd ../p03-mqtt-probe
-    - test_build.sh
-    
+    - ./test_build.sh
+    - cd ../p03-mqtt-probe/
+    - ./test_build.sh
+
 
 
 
