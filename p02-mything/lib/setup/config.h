@@ -17,10 +17,18 @@
 
 
 #ifdef ARDUINO_LOLIN_D32
-#define ANALOG_1 34
-#define ANALOG_2 32
+#define ANALOG_1 32
+#define ANALOG_2 34
 #define ANALOG_BAT 35
+#define SENSOR_1 2
+#define SENSOR_2 4
 #endif
+
+#ifdef ARDUINO_LOLIN32
+#define ANALOG_1 A0
+#define ANALOG_2 A3
+#endif
+
 
 #ifdef ARDUINO_ESP32_DEV
 #define ANALOG_1 A0

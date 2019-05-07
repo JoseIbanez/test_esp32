@@ -147,6 +147,17 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
+  #ifdef SENSOR_1
+  pinMode(SENSOR_1, OUTPUT);
+  digitalWrite(SENSOR_1, HIGH);
+  #endif
+
+  #ifdef SENSOR_2
+  pinMode(SENSOR_2, OUTPUT);
+  digitalWrite(SENSOR_2, HIGH);
+  #endif
+
+
   Serial.begin(9600);
   lastBoot = millis();
 
