@@ -51,7 +51,7 @@ void callback(char* rTopic, byte* message, unsigned int length) {
   Serial.println(rTopic);
 
   mything.parse_cmd(message, length);
-  //update_gpio(relayStatus);
+  mything.update_gpio();
   
 
   // Send answer
@@ -72,6 +72,7 @@ void setup() {
   lastBoot = millis();
   setup_wifi();  
 
+  mything.setup_gpio();
   mything.set_clientId("ESP", WiFi.macAddress().c_str());
   client.setServer(MQTT_SERVER, MQTT_PORT);
   client.setCallback(callback);
@@ -116,7 +117,7 @@ void loop() {
 
   // end of time
   if (mything.endTime(now)>0) {
-    //update_gpio(relayStatus);
+    mything.update_gpio();
   }
 
 

@@ -14,6 +14,8 @@ public:
     long lastBeacon = 0;
     long lastOrder = 0;
     String relayStatus = "0000";
+    unsigned int relayList[4];
+
 
     String clientId = "";
 
@@ -27,6 +29,9 @@ public:
 
     int  beaconTime(long now);
     int  endTime(long now);
+
+    void setup_gpio();
+    void update_gpio();
 
 };
 

@@ -35,5 +35,16 @@
 #define ANALOG_2 A3
 #endif
 
+//relay ports
+#ifdef ARDUINO_ESP01_1M
+#define RELAY1 0
+#define RELAY2 0
+#define RELAY3 0
+#define RELAY4 0
+#endif
+
+
+
+
 
 #endif

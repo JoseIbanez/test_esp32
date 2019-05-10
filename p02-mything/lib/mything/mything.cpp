@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <mything.h>
+#include <config.h>
 
 #define DEBUG 1
 
@@ -106,6 +107,7 @@ int  Mything::endTime(long int now){
 
   // if "on" and last order older than curTime
   if ( curTime > 0   &&   (now - lastOrder) > curTime*1000 ) {
+    Serial.println("curTime: 0");
     curTime = 0;
     relayStatus = "0000";
     ret = 1;
@@ -113,6 +115,63 @@ int  Mything::endTime(long int now){
 
   return(ret);
 };
+
+
+
+
+//
+// setup_gpio
+//
+void Mything::setup_gpio() {
+  
+  relayList[0] = RELAY1;
+  relayList[1] = RELAY2;
+  relayList[2] = RELAY3;
+  relayList[3] = RELAY4;
+
+  int length = (sizeof(relayList)/sizeof(*relayList));
+
+  for (int i=0; i < length; i++) {
+    pinMode(relayList[i], OUTPUT);
+    digitalWrite(relayList[i],HIGH);
+  }
+
+}
+
+
+//
+// update_gpio
+//
+void Mything::update_gpio() {
+
+  int pinValue = HIGH;
+  int length = (sizeof(relayList)/sizeof(*relayList));
+
+  Serial.print("Relays set to: ");
+  //Serial.println(status);
+
+  for (int i=0; i < length; i++){
+
+    if (relayStatus.charAt(i) == '1') {
+      Serial.print("1");
+      pinValue = LOW;
+    } else {
+      Serial.print("0");
+      pinValue = HIGH;
+    }
+
+    digitalWrite(relayList[i],pinValue);
+  }
+
+  Serial.println(".");
+}
+
+
+
+
+
+
+
 
 
 
