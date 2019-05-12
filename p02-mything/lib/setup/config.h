@@ -43,6 +43,13 @@
 #define RELAY4 0
 #endif
 
+//default replay ports
+#ifndef RELAY1
+#define RELAY1 2
+#define RELAY2 2
+#define RELAY3 2
+#define RELAY4 2
+#endif
 
 
 

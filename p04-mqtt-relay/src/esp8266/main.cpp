@@ -89,8 +89,16 @@ void loop() {
   long now = millis();
 
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Deepsleep mode for 30 sec.");
-    ESP.deepSleep(300 * 10000000); 
+    //Serial.println("Deepsleep mode for 30 sec.");
+    //ESP.deepSleep(300 * 10000000);
+    Serial.println("Restart in 10 sec.");
+    delay(10 * 10000);
+    ESP.restart();
+  }
+
+  // sanity, reset after 24 hours
+  if (now - lastBoot > 24*3600*1000 && mything.curTime == 0) {
+    ESP.restart();
   }
 
   // Check mqtt connection
