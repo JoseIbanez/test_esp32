@@ -1,6 +1,7 @@
 #ifndef MYTHING_H
 #define MYTHING_H
 
+#include "esp_system.h"
 
 
 class Mything {
@@ -16,6 +17,8 @@ public:
     unsigned long lastOrder = 0;
     String relayStatus = "0000";
     unsigned int relayList[4];
+
+    hw_timer_t *timer = NULL;
 
 
     String clientId = "";

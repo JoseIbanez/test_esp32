@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <mything.h>
 #include <config.h>
+//#include "esp_system.h"
+
 
 #define DEBUG 1
 
@@ -97,11 +99,20 @@ int  Mything::beaconTime(unsigned long now) {
 
 
 
+void IRAM_ATTR resetModule() {
+  ets_printf("reboot\n");
+  esp_restart();
+}
+
+
 //
 // watchdog function
 //
 void  Mything::watchdog(unsigned long now) {
   int ret = 0;
+
+  timerWrite(timer, 0); //reset timer (feed watchdog)
+
 
   if (now < lastBeacon) {
     return;
@@ -157,6 +168,13 @@ int  Mything::endTime(unsigned long now){
 //
 void Mything::setup_gpio() {
   
+  timer = timerBegin(0, 80, true);                  //timer 0, div 80
+  timerAttachInterrupt(timer, &resetModule, true);  //attach callback
+  timerAlarmWrite(timer, 5 * 1000 * 1000, false); //set time in us
+  timerAlarmEnable(timer);  
+
+
+
   relayList[0] = RELAY1;
   relayList[1] = RELAY2;
   relayList[2] = RELAY3;

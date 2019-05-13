@@ -10,7 +10,16 @@
 #include "secrets.h"
 #include "config.h"
 
-
+/*
+void WiFiEvent(WiFiEvent_t event) {
+  switch (event) {
+    case SYSTEM_EVENT_STA_DISCONNECTED:
+      Serial.println("WiFi STA Disconnected");
+      delay(1000);
+      ESP.restart();
+  }
+}
+*/
 
 void setup_wifi() {
   delay(100);
@@ -20,9 +29,10 @@ void setup_wifi() {
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
 
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
+  //WiFi.mode(WIFI_STA);
+  //WiFi.disconnect();
   delay(100);
+  //WiFi.onEvent(WiFiEvent);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   while (WiFi.status() != WL_CONNECTED) {
