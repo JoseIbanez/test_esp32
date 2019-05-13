@@ -87,7 +87,7 @@ int  Mything::beaconTime(unsigned long now) {
   int ret = 0;
 
   // if last beach age was 1 minute
-  if (now - lastBeacon > 60000) {
+  if (now - lastBeacon > 60* 1000UL) {
     lastBeacon = now;
     ret = 1;
   }
@@ -103,21 +103,25 @@ int  Mything::beaconTime(unsigned long now) {
 void  Mything::watchdog(unsigned long now) {
   int ret = 0;
 
+  if (now < lastBeacon) {
+    return;
+  }
+
   // if no beacon x 3 times
-  if (now - lastBeacon > 3 * 60000) {
+  if (now - lastBeacon > 3 * 60000UL) {
     Serial.println("beaconTime failed");
     ret = 1;
   }
 
 
   // sanity, reset after 24 hours
-  if (now - lastBoot > 24*3600*1000 && curTime == 0) {
+  if (now - lastBoot > 24*3600*1000UL && curTime == 0) {
     Serial.println("daily restart");
     ret = 1;
   }
 
 
-  if (ret>0) {
+  if (ret > 0) {
     Serial.println("restarting");
     ESP.restart();
   }
@@ -133,8 +137,9 @@ void  Mything::watchdog(unsigned long now) {
 int  Mything::endTime(unsigned long now){
   int ret = 0;
 
+
   // if "on" and last order older than curTime
-  if ( curTime > 0   &&   (now - lastOrder) > curTime*1000 ) {
+  if ( curTime > 0   &&  now > lastOrder   &&  (now - lastOrder) > curTime * 1000UL ) {
     Serial.println("curTime: 0");
     curTime = 0;
     relayStatus = "0000";
