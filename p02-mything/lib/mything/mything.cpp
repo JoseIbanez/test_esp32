@@ -80,14 +80,10 @@ void Mything::set_clientId(const char* prefix, const char* mac) {
 
 
 
-
-
-
-
 //
 // beaconTime function
 //
-int  Mything::beaconTime(long int now) {
+int  Mything::beaconTime(unsigned long now) {
   int ret = 0;
 
   // if last beach age was 1 minute
@@ -99,10 +95,42 @@ int  Mything::beaconTime(long int now) {
   return(ret);
 };
 
+
+
+//
+// watchdog function
+//
+void  Mything::watchdog(unsigned long now) {
+  int ret = 0;
+
+  // if no beacon x 3 times
+  if (now - lastBeacon > 3 * 60000) {
+    Serial.println("beaconTime failed");
+    ret = 1;
+  }
+
+
+  // sanity, reset after 24 hours
+  if (now - lastBoot > 24*3600*1000 && curTime == 0) {
+    Serial.println("daily restart");
+    ret = 1;
+  }
+
+
+  if (ret>0) {
+    Serial.println("restarting");
+    ESP.restart();
+  }
+
+
+};
+
+
+
 //
 // endTime function
 //
-int  Mything::endTime(long int now){
+int  Mything::endTime(unsigned long now){
   int ret = 0;
 
   // if "on" and last order older than curTime

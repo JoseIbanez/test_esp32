@@ -11,8 +11,9 @@ public:
     Mything() {}
 
     int curTime = 0;
-    long lastBeacon = 0;
-    long lastOrder = 0;
+    unsigned long lastBoot = 0;
+    unsigned long lastBeacon = 0;
+    unsigned long lastOrder = 0;
     String relayStatus = "0000";
     unsigned int relayList[4];
 
@@ -27,8 +28,9 @@ public:
     void parse_cmd(byte *message, unsigned int length);
     void set_clientId(const char* prefix, const char* mac);
 
-    int  beaconTime(long now);
-    int  endTime(long now);
+    int  beaconTime(unsigned long now);
+    int  endTime(unsigned long now);
+    void watchdog(unsigned long now);
 
     void setup_gpio();
     void update_gpio();

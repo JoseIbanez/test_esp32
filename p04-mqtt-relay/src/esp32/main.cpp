@@ -9,9 +9,6 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 Mything mything;
-long lastBoot = 0;
-
-
 
 
 //
@@ -28,8 +25,6 @@ int mqtt_reconnect() {
   if (!client.connect(mything.id)) {
     Serial.print("failed, rc=");
     Serial.print(client.state());
-    Serial.println(" try again in 1 seconds");
-    delay(1000);
     return -1;
   }
   Serial.println("Connected.");
@@ -51,7 +46,7 @@ void callback(char* rTopic, byte* message, unsigned int length) {
   Serial.println(rTopic);
 
   mything.parse_cmd(message, length);
-  //update_gpio(relayStatus);
+  mything.update_gpio();
   
 
   // Send answer
@@ -68,10 +63,12 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
+  mything.lastBoot = millis();
+
   Serial.begin(9600);
-  lastBoot = millis();
   setup_wifi();  
 
+  mything.setup_gpio();
   mything.set_clientId("ESP", WiFi.macAddress().c_str());
   client.setServer(MQTT_SERVER, MQTT_PORT);
   client.setCallback(callback);
@@ -85,15 +82,21 @@ void setup() {
 // 
 void loop() {
 
-  long now = millis();
+  unsigned long now = millis();
+
+  mything.watchdog(now);
+
 
   if (WiFi.status() != WL_CONNECTED) {
-    //sleep_now();
+    Serial.println("WiFi no ready");
+    delay(3 * 1000);
     return;
   }
 
   // Check mqtt connection
   if(mqtt_reconnect() < 0) {
+    Serial.println("Mqtt no ready");
+    delay(3 * 1000);
     return;
   }
 
@@ -116,7 +119,7 @@ void loop() {
 
   // end of time
   if (mything.endTime(now)>0) {
-    //update_gpio(relayStatus);
+    mything.update_gpio();
   }
 
 
