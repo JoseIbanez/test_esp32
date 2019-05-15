@@ -65,7 +65,7 @@ void setup() {
 
   mything.lastBoot = millis();
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   setup_wifi();  
 
   mything.setup_gpio();
