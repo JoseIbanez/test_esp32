@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 #include "esp_system.h"
-#include "sleep.h"
+//#include "sleep.h"
 #endif
 
 #define DEBUG 1
@@ -36,7 +36,7 @@ void Mything::parse_cmd(byte *message, unsigned int length) {
     Serial.println(relayStatus);
     return;
   }
-  
+
   int pos = command.indexOf(';');
   if (pos<0) {
     return;
@@ -104,13 +104,11 @@ int  Mything::beaconTime(unsigned long now) {
 #ifdef ESP32
 //
 // watchdog reset function
-// 
+//
 void IRAM_ATTR resetModule() {
   ets_printf("\nreboot\n");
-  
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   esp_deep_sleep_start();
-
   //esp_restart();
 }
 #endif
@@ -178,12 +176,12 @@ int  Mything::endTime(unsigned long now){
 // setup_gpio
 //
 void Mything::setup_gpio() {
-  
+
   #ifdef ESP32
   timer = timerBegin(0, 80, true);                  //timer 0, div 80
   timerAttachInterrupt(timer, &resetModule, true);  //attach callback
   timerAlarmWrite(timer, 5 * 1000 * 1000, false); //set time in us
-  timerAlarmEnable(timer);  
+  timerAlarmEnable(timer);
   #endif
 
 
