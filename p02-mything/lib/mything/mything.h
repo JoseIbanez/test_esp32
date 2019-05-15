@@ -1,8 +1,9 @@
 #ifndef MYTHING_H
 #define MYTHING_H
 
+#ifdef ESP32
 #include "esp_system.h"
-
+#endif
 
 class Mything {
 
@@ -18,8 +19,9 @@ public:
     String relayStatus = "0000";
     unsigned int relayList[4];
 
+    #ifdef ESP32
     hw_timer_t *timer = NULL;
-
+    #endif
 
     String clientId = "";
 

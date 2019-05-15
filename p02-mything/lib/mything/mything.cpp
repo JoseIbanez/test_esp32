@@ -98,12 +98,15 @@ int  Mything::beaconTime(unsigned long now) {
 };
 
 
-
+#ifdef ESP32
+//
+// watchdog reset function
+// 
 void IRAM_ATTR resetModule() {
   ets_printf("reboot\n");
   esp_restart();
 }
-
+#endif
 
 //
 // watchdog function
@@ -111,8 +114,9 @@ void IRAM_ATTR resetModule() {
 void  Mything::watchdog(unsigned long now) {
   int ret = 0;
 
+  #ifdef ESP32
   timerWrite(timer, 0); //reset timer (feed watchdog)
-
+  #endif
 
   if (now < lastBeacon) {
     return;
@@ -168,11 +172,12 @@ int  Mything::endTime(unsigned long now){
 //
 void Mything::setup_gpio() {
   
+  #ifdef ESP32
   timer = timerBegin(0, 80, true);                  //timer 0, div 80
   timerAttachInterrupt(timer, &resetModule, true);  //attach callback
   timerAlarmWrite(timer, 5 * 1000 * 1000, false); //set time in us
   timerAlarmEnable(timer);  
-
+  #endif
 
 
   relayList[0] = RELAY1;
