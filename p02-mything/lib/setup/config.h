@@ -27,6 +27,10 @@
 #ifdef ARDUINO_LOLIN32
 #define ANALOG_1 A0
 #define ANALOG_2 A3
+#define RELAY1 25
+#define RELAY2 26
+#define RELAY3 27
+#define RELAY4 14
 #endif
 
 
