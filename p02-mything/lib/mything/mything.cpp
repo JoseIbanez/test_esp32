@@ -1,8 +1,11 @@
 #include <Arduino.h>
 #include <mything.h>
 #include <config.h>
-//#include "esp_system.h"
 
+#ifdef ESP32
+#include "esp_system.h"
+#include "sleep.h"
+#endif
 
 #define DEBUG 1
 
@@ -103,8 +106,12 @@ int  Mything::beaconTime(unsigned long now) {
 // watchdog reset function
 // 
 void IRAM_ATTR resetModule() {
-  ets_printf("reboot\n");
-  esp_restart();
+  ets_printf("\nreboot\n");
+  
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  esp_deep_sleep_start();
+
+  //esp_restart();
 }
 #endif
 
