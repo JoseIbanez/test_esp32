@@ -15,6 +15,10 @@
 #define MQTT_TOPIC_BATT  "batt"
 #define MQTT_TOPIC_CALLHOME  "callhome"
 
+#define TIME_READING 3
+#define TIME_BEACON 60
+#define TIME_SLEEP 15
+
 
 #ifdef ARDUINO_LOLIN_D32
 #define ANALOG_1 32

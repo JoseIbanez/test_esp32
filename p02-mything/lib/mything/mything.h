@@ -39,7 +39,8 @@ public:
     int  endTime(unsigned long now);
     void watchdog(unsigned long now);
 
-    void setup_gpio();
+    void setup_relay_gpio();
+    void setup_sensor_gpio();
     void update_gpio();
 
 };

@@ -150,6 +150,43 @@ void  Mything::watchdog(unsigned long now) {
 };
 
 
+//
+// watchdog function for sensor
+//
+void  Mything::watchdog(unsigned long now) {
+  int ret = 0;
+
+  #ifdef ESP32
+  timerWrite(timer, 0); //reset timer (feed watchdog)
+  #endif
+
+  if (now < lastBeacon) {
+    return;
+  }
+
+  // if no beacon x 3 times
+  if (now - lastBeacon > 3 * 60000UL) {
+    Serial.println("beaconTime failed");
+    ret = 1;
+  }
+
+
+  // sanity, reset after 24 hours
+  if (now - lastBoot > 24*3600*1000UL && curTime == 0) {
+    Serial.println("daily restart");
+    ret = 1;
+  }
+
+
+  if (ret > 0) {
+    Serial.println("restarting");
+    ESP.restart();
+  }
+
+
+};
+
+
 
 //
 // endTime function
@@ -175,7 +212,7 @@ int  Mything::endTime(unsigned long now){
 //
 // setup_gpio
 //
-void Mything::setup_gpio() {
+void Mything::setup_relay_gpio() {
 
   #ifdef ESP32
   timer = timerBegin(0, 80, true);                  //timer 0, div 80
@@ -196,6 +233,27 @@ void Mything::setup_gpio() {
     pinMode(relayList[i], OUTPUT);
     digitalWrite(relayList[i],HIGH);
   }
+
+}
+
+void Mything::setup_sensor_gpio() {
+
+  #ifdef ESP32
+  timer = timerBegin(0, 80, true);                  //timer 0, div 80
+  timerAttachInterrupt(timer, &resetModule, true);  //attach callback
+  timerAlarmWrite(timer, 5 * 1000 * 1000, false); //set time in us
+  timerAlarmEnable(timer);
+  #endif
+
+  #ifdef SENSOR_1
+  pinMode(SENSOR_1, OUTPUT);
+  digitalWrite(SENSOR_1, HIGH);
+  #endif
+
+  #ifdef SENSOR_2
+  pinMode(SENSOR_2, OUTPUT);
+  digitalWrite(SENSOR_2, HIGH);
+  #endif
 
 }
 

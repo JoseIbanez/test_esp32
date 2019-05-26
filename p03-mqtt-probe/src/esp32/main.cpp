@@ -1,18 +1,16 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include "mything.h"
+#include "myprobe.h"
 #include "config.h"
 #include "setup.h"
 #include "secrets.h"
 #include "sleep.h"
+#include "watchdog.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-Mything mything;
-long lastBoot = 0;
-long lastMsg = 0;
-
+Myprobe myprobe;
 
 
 //
@@ -26,7 +24,7 @@ int mqtt_reconnect() {
   
   Serial.print("Attempting MQTT connection...");
   // Attempt to connect
-  if (!client.connect(mything.id)) {
+  if (!client.connect(myprobe.id)) {
     Serial.print("failed, rc=");
     Serial.print(client.state());
     Serial.println(" try again in 1 seconds");
@@ -37,11 +35,12 @@ int mqtt_reconnect() {
   
   // Subscribe
   Serial.print("Suscribed to topic=");
-  Serial.println(mything.queryTopic);
-  client.subscribe(mything.queryTopic);
+  Serial.println(myprobe.queryTopic);
+  client.subscribe(myprobe.queryTopic);
 
   return 0;
 }
+
 
 //
 // mqtt callback function
@@ -51,11 +50,8 @@ void callback(char* rTopic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.println(rTopic);
 
-  //mything.parse_cmd(message, length);
-  //update_gpio(relayStatus);
-
   // Send answer
-  client.publish(mything.answerTopic, "ok");
+  client.publish(myprobe.answerTopic, "ok");
 
   delay(100);
   digitalWrite(LED_BUILTIN, HIGH);
@@ -81,11 +77,12 @@ void send_reading() {
     Serial.println(moisString);
     // Prepare topic
     strcpy(topic,"r/");
-    strcat(topic,mything.id);
+    strcat(topic,myprobe.id);
     strcat(topic,".A0/");
     strcat(topic,MQTT_TOPIC_MOIS);
     // Send msg
     client.publish(topic, moisString);
+
 
     // get data
     moisture = analogRead(ANALOG_2);
@@ -95,7 +92,7 @@ void send_reading() {
     Serial.println(moisString);
     // Prepare topic
     strcpy(topic,"r/");
-    strcat(topic,mything.id);
+    strcat(topic,myprobe.id);
     strcat(topic,".A1/");
     strcat(topic,MQTT_TOPIC_MOIS);
     // Send msg
@@ -113,7 +110,7 @@ void send_reading() {
     Serial.println(moisString);
     // Prepare topic
     strcpy(topic,"r/");
-    strcat(topic,mything.id);
+    strcat(topic,myprobe.id);
     strcat(topic,".A9/");
     strcat(topic,MQTT_TOPIC_BATT);
     // Send msg
@@ -121,21 +118,6 @@ void send_reading() {
     #endif
 
 
-    /*
-    //humidity = bme.readHumidity();
-    float humidity = 50;
-
-    // Convert the value to a char array
-    char humString[8];
-    dtostrf(humidity, 1, 2, humString);
-    Serial.print("Humidity: ");
-    Serial.println(humString);
-    strcpy(topic,"r/");
-    strcat(topic,clientId);
-    strcat(topic,"/");
-    strcat(topic,MQTT_TOPIC_HUMI);
-    client.publish(topic, humString);
-    */
   }
 
 
@@ -147,24 +129,14 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
-  #ifdef SENSOR_1
-  pinMode(SENSOR_1, OUTPUT);
-  digitalWrite(SENSOR_1, HIGH);
-  #endif
-
-  #ifdef SENSOR_2
-  pinMode(SENSOR_2, OUTPUT);
-  digitalWrite(SENSOR_2, HIGH);
-  #endif
-
-
-  Serial.begin(9600);
-  lastBoot = millis();
-
+  myprobe.lastBoot = millis();
+  Serial.begin(115200);
   setup_wifi();  
   setup_sleep();
+  setup_watchdog();
 
-  mything.set_clientId("ESP", WiFi.macAddress().c_str());
+  myprobe.setup_gpio();
+  myprobe.set_clientId("ESP", WiFi.macAddress().c_str());
   client.setServer(MQTT_SERVER, MQTT_PORT);
   client.setCallback(callback);
 
@@ -177,30 +149,32 @@ void setup() {
 // 
 void loop() {
 
-  long now = millis();
+  unsigned long now = millis();
+  watchdog();
 
-  if (now - lastBoot > 30000 || WiFi.status() != WL_CONNECTED) {
+  if (myprobe.sleepTime(now)) {
     client.disconnect();
     sleep_now();
   }
 
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi no ready");
+    delay(3 * 1000);
+    return;
+  }
+
   // Check mqtt connection
   if(mqtt_reconnect() < 0) {
+    Serial.println("Mqtt no ready");
+    delay(3 * 1000);
     return;
   }
 
   client.loop();
   
-  // Send beacon message
-  //if (mything.beaconTime(now) > 0) {
-  //  client.publish(mything.beaconTopic, "ok");
-  //}
-
-  // Send reading
-  if (now - lastMsg > 5000) {
-    lastMsg = now;
+  // Send beacon message or Send reading
+  if (myprobe.readingTime(now) > 0) {
     send_reading();
   }
-
 
 }
