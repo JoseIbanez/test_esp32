@@ -45,6 +45,8 @@
 #define RELAY2 26
 #define RELAY3 27
 #define RELAY4 14
+#define SENSOR_1 2
+#define SENSOR_2 4
 #endif
 
 //relay ports

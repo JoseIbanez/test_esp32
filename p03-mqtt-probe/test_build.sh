@@ -1,3 +1,3 @@
 #!/bin/bash
 
-platformio run -e esp32
+platformio run -e esp32 -e lolin_d32
