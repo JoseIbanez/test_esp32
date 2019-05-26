@@ -43,6 +43,8 @@ script:
     - ./test_build.sh
     - cd ../p03-mqtt-probe/
     - ./test_build.sh
+    - cd ../p04-mqtt-relay/
+    - ./test_build.sh
 
 
 
