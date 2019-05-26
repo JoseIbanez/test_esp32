@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 #include "esp_system.h"
-//#include "sleep.h"
+#include "sleep.h"
 #endif
 
 #define DEBUG 1
@@ -36,7 +36,7 @@ void Mything::parse_cmd(byte *message, unsigned int length) {
     Serial.println(relayStatus);
     return;
   }
-
+  
   int pos = command.indexOf(';');
   if (pos<0) {
     return;
@@ -104,54 +104,19 @@ int  Mything::beaconTime(unsigned long now) {
 #ifdef ESP32
 //
 // watchdog reset function
-//
+// 
 void IRAM_ATTR resetModule() {
   ets_printf("\nreboot\n");
+  
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   esp_deep_sleep_start();
+
   //esp_restart();
 }
 #endif
 
 //
 // watchdog function
-//
-void  Mything::watchdog(unsigned long now) {
-  int ret = 0;
-
-  #ifdef ESP32
-  timerWrite(timer, 0); //reset timer (feed watchdog)
-  #endif
-
-  if (now < lastBeacon) {
-    return;
-  }
-
-  // if no beacon x 3 times
-  if (now - lastBeacon > 3 * 60000UL) {
-    Serial.println("beaconTime failed");
-    ret = 1;
-  }
-
-
-  // sanity, reset after 24 hours
-  if (now - lastBoot > 24*3600*1000UL && curTime == 0) {
-    Serial.println("daily restart");
-    ret = 1;
-  }
-
-
-  if (ret > 0) {
-    Serial.println("restarting");
-    ESP.restart();
-  }
-
-
-};
-
-
-//
-// watchdog function for sensor
 //
 void  Mything::watchdog(unsigned long now) {
   int ret = 0;
@@ -212,13 +177,13 @@ int  Mything::endTime(unsigned long now){
 //
 // setup_gpio
 //
-void Mything::setup_relay_gpio() {
-
+void Mything::setup_gpio() {
+  
   #ifdef ESP32
   timer = timerBegin(0, 80, true);                  //timer 0, div 80
   timerAttachInterrupt(timer, &resetModule, true);  //attach callback
   timerAlarmWrite(timer, 5 * 1000 * 1000, false); //set time in us
-  timerAlarmEnable(timer);
+  timerAlarmEnable(timer);  
   #endif
 
 
@@ -233,27 +198,6 @@ void Mything::setup_relay_gpio() {
     pinMode(relayList[i], OUTPUT);
     digitalWrite(relayList[i],HIGH);
   }
-
-}
-
-void Mything::setup_sensor_gpio() {
-
-  #ifdef ESP32
-  timer = timerBegin(0, 80, true);                  //timer 0, div 80
-  timerAttachInterrupt(timer, &resetModule, true);  //attach callback
-  timerAlarmWrite(timer, 5 * 1000 * 1000, false); //set time in us
-  timerAlarmEnable(timer);
-  #endif
-
-  #ifdef SENSOR_1
-  pinMode(SENSOR_1, OUTPUT);
-  digitalWrite(SENSOR_1, HIGH);
-  #endif
-
-  #ifdef SENSOR_2
-  pinMode(SENSOR_2, OUTPUT);
-  digitalWrite(SENSOR_2, HIGH);
-  #endif
 
 }
 
