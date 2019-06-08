@@ -1,4 +1,5 @@
 secrets.h
+version.h
 .vscode/
 .vagrant/
 *console.log
