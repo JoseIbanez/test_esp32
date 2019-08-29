@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Setup VM OS
+#Setup VM OS (USB support)
 sudo apt-get -y update
 sudo apt-get -y install python-pip linux-image-extra-virtual
 
