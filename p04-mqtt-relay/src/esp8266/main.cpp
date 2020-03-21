@@ -110,7 +110,7 @@ void loop() {
   
   // Send beacon message
   if (mything.beaconTime(now) > 0) {
-    client.publish(mything.beaconTopic, "ok");
+    client.publish(mything.beaconTopic, "ok. v.0.1-20200321");
   }
 
 

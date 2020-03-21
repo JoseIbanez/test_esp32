@@ -13,3 +13,5 @@ curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/
 
 platformio update
 platformio lib update
+
+platformio lib --global install PubSubClient

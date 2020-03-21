@@ -49,6 +49,25 @@
 #define SENSOR_2 4
 #endif
 
+
+//relay ports
+#ifdef ARDUINO_D1MINIPRO
+#define RELAY1 16
+#define RELAY2 14
+#define RELAY3 12
+#define RELAY4 13
+#endif
+
+//relay ports
+#ifdef ARDUINO_D1MINI
+#define RELAY1 16
+#define RELAY2 14
+#define RELAY3 12
+#define RELAY4 13
+#endif
+
+
+
 //relay ports
 #ifdef ARDUINO_ESP01_1M
 #define RELAY1 0
