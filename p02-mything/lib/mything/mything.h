@@ -3,6 +3,7 @@
 
 #ifdef ESP32
 #include "esp_system.h"
+#include <ESP32Servo.h>
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
 #define TIME_TO_SLEEP  10      /* Time ESP32 will go to sleep (in seconds) */
 #endif
@@ -20,6 +21,10 @@ public:
     unsigned long lastOrder = 0;
     String relayStatus = "0000";
     unsigned int relayList[4];
+    unsigned int azimuth = 0;
+    unsigned int elevation = 0;
+    Servo servo_az;
+    Servo servo_ev;
 
     #ifdef ESP32
     hw_timer_t *timer = NULL;
@@ -41,6 +46,9 @@ public:
 
     void setup_gpio();
     void update_gpio();
+
+    void setup_pwm();
+    void update_pwm();
 
 };
 

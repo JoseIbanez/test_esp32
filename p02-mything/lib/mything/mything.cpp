@@ -37,11 +37,29 @@ void Mything::parse_cmd(byte *message, unsigned int length) {
     return;
   }
   
+  // parameter commands
   int pos = command.indexOf(';');
   if (pos<0) {
     return;
   }
 
+  // set values
+  if (command.startsWith("SET AZ;")) {
+    azimuth = command.substring(pos+1).toInt();
+    Serial.print("Azimuth: ");
+    Serial.println(String(azimuth));
+    return;
+  }
+
+  if (command.startsWith("SET EV;")) {
+    elevation = command.substring(pos+1).toInt();
+    Serial.print("Elevation: ");
+    Serial.println(String(elevation));
+    return;
+  }
+
+
+  //Default command set relay's values and timeout
   curTime     =  command.substring(1,pos).toInt();
   relayStatus =  command.substring(pos+1);
   lastOrder   =  millis();
@@ -230,10 +248,29 @@ void Mything::update_gpio() {
 }
 
 
+//
+// Setup pwm
+//
+void Mything::setup_pwm() {
+
+	ESP32PWM::allocateTimer(0);
+	ESP32PWM::allocateTimer(1);
+	ESP32PWM::allocateTimer(2);
+	ESP32PWM::allocateTimer(3);
+
+	servo_az.setPeriodHertz(50);    // standard 50 hz servo
+	servo_az.attach(PWM_1, 500, 2400); // attaches the servo on pin 18 to the servo object
+
+	servo_ev.setPeriodHertz(50);    // standard 50 hz servo
+	servo_ev.attach(PWM_2, 500, 2400); // attaches the servo on pin 18 to the servo object
+
+}
 
 
-
-
+void Mything::update_pwm() {
+		servo_az.write(azimuth);
+		servo_ev.write(elevation);
+}
 
 
 

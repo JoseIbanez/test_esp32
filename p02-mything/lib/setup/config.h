@@ -47,6 +47,8 @@
 #define RELAY4 14
 #define SENSOR_1 2
 #define SENSOR_2 4
+#define PWM_1 18
+#define PWM_2 13
 #endif
 
 
